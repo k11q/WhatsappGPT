@@ -1,0 +1,4 @@
+node_modules/
+tokens/
+.wwebjs_auth/
+history.json
