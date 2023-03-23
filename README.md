@@ -13,9 +13,9 @@ ChatGPT in your whatsapp, with your own phone number!
 
 ### Local
 1. First, you need to setup OpenAI API and put a system message.
-        - If you don't have an OpenAI account, create it first [here](https://auth0.openai.com/u/signup), then create a key [here](https://platform.openai.com/overview).
+- If you don't have an OpenAI account, create it first [here](https://auth0.openai.com/u/signup), then create a key [here](https://platform.openai.com/overview).
 2. Add OpenAI API key and the system message in the .env file.
-        -  System message can be anything, it is the first prompt chatgpt will listen to, and should be stronger than a normal user prompt. You can put rules there.
+-  System message can be anything, it is the first prompt chatgpt will listen to, we use it to setup how the AI chat should behave. You can put rules there.
 3. Then, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
 4. Wait for it to produce a QR code, connect it to your whatsapp number.
 5. When it logs `Client is ready!`, close with `shift` and `C`
