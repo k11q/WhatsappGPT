@@ -23,6 +23,13 @@ ChatGPT in your whatsapp, with your own phone number!
 7. You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
 
 ## Usage
+
+> **Note**
+> Right now error handling via the API call isn't working. Don't mad at me.
+
+> **Warning**
+> Caution with sharing your number connected to this. Incase somebody spam your number, the number might be banned by whatsapp, or you will lose a ton of money via OpenAI.
+
 - When somebody send a message to the number you connected starting with `!chat`(or other command you configured) via whatsapp, either in groups or personal, it will reply with a response from chatGPT.
 - It remembers your 4 previous messages(only that starts with `!chat`) or 2 messages back to back and you can follow up the questions with that.
 - Sometimes it wont work, maybe because you filled the token limit, so what you can do is message it with `!chat delete history` to prevent from sending previous messages and you can run again.
@@ -39,9 +46,3 @@ ChatGPT in your whatsapp, with your own phone number!
 
 ## Configuration
 - You can replace the default `!chat` command with anything with anything by changing the `trigger` value in `config.yaml`
-
-> **Note**
-> Right now error handling via the API call isn't working. Don't mad at me.
-
-> **Warning**
-> Caution with sharing your number connected to this. Incase somebody spam your number, the number might be banned by whatsapp, or you will lose a ton of money via OpenAI.
