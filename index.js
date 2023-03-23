@@ -37,8 +37,13 @@ client.on("message", (message) => {
 
 client.on("message", async (message) => {
 	const firstWord = message.body.split(" ").shift();
+	if (message.body === "!chat delete history") {
+		fs.unlinkSync("history.json");
+		message.reply("history deleted");
+		return;
+	}
 	if (firstWord === "!chat") {
-		if (chatMessages.length > 20) {
+		if (chatMessages.length > 4) {
 			chatMessages.splice(0, 1);
 		}
 		chatMessages.push({
@@ -60,13 +65,17 @@ client.on("message", async (message) => {
 			}
 		}
 		arr.push(new HumanChatMessage(contents));
-		const response = await chat.call(arr);
-		chatMessages.push({
-			name: "Chat",
-			message: response.text,
-			role: "AI",
-		});
-		message.reply(response.text);
+		try {
+			const response = await chat.call(arr);
+			chatMessages.push({
+				name: "Chat",
+				message: response.text,
+				role: "AI",
+			});
+			message.reply(response.text);
+		} catch (error) {
+			message.reply(`error: ${error.message}`);
+		}
 
 		// Save chat history to file
 		fs.writeFileSync("history.json", JSON.stringify(chatMessages));
