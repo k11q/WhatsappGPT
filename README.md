@@ -1,7 +1,7 @@
 # bot-gpt
 ChatGPT in your whatsapp, with your own number!
 
-Installation
+## Installation
 - Clone the repo
 - Create .env file (or just remove the .env.example to .env)
 - Add the OpenAI API key there and the system message.
