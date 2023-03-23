@@ -15,3 +15,6 @@ Installation
 - When finished just close with `shift` and `C`
 - Then run `pm2 start index.js`
 - Now any message received that starts with "!chat" would be answered with a ChatGPT response!
+
+## Deploying
+- I have no idea how to deploy it, currently it uses persistant db so it is a problem. If any of you want to contribute and find a way to deploy it easily, feel free!
