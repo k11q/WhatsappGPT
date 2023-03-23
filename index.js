@@ -34,15 +34,17 @@ if (fs.existsSync("history.json")) {
 }
 
 client.on("message", async (message) => {
-	const firstWord = message.body.split(" ").shift();
 	if (message.body === `${config.trigger} delete history`) {
 		fs.unlinkSync("history.json");
 		message.reply("history deleted");
 		return;
 	}
-	if (firstWord === config.trigger) {
-		if (chatMessages.length > 4) {
-			chatMessages.splice(0, 1);
+	const firstWord = message.body.split(" ").shift();
+	const numberOfWords = message.body.split(" ");
+	if (firstWord === config.trigger && numberOfWords > 1) {
+		const trimmedLength = chatMessages.length - 4;
+		if (trimmedLength > 0) {
+			chatMessages.splice(0, trimmedLength);
 		}
 		chatMessages.push({
 			name: message._data.notifyName,
@@ -63,18 +65,18 @@ client.on("message", async (message) => {
 			}
 		}
 		arr.push(new HumanChatMessage(contents));
-		try {
-			const response = await chat.call(arr);
-			chatMessages.push({
-				name: "Chat",
-				message: response.text,
-				role: "AI",
+		chat.call(arr)
+			.then((response) => {
+				chatMessages.push({
+					name: "Chat",
+					message: response.text,
+					role: "AI",
+				});
+				message.reply(response.text);
+			})
+			.catch((error) => {
+				message.reply(`error: ${error.message}`);
 			});
-			message.reply(response.text);
-		} catch (error) {
-			message.reply(`error: ${error.message}`);
-		}
-
 		// Save chat history to file
 		fs.writeFileSync("history.json", JSON.stringify(chatMessages));
 	}
