@@ -40,7 +40,7 @@ client.on("message", async (message) => {
 		return;
 	}
 	const firstWord = message.body.split(" ").shift();
-	const numberOfWords = message.body.split(" ");
+	const numberOfWords = message.body.split(" ").length;
 	if (firstWord === config.trigger && numberOfWords > 1) {
 		const trimmedLength = chatMessages.length - 4;
 		if (trimmedLength > 0) {
