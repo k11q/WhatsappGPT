@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/khairulhaaziq/whatsappgpt/main/whatsapp-gpt.png" alt="WhatsappGPT - ChatGPT in your whatsapp" width="300">
+
 # WhatsappGPT
 ChatGPT in your whatsapp, with your own number!
 
