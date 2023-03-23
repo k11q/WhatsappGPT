@@ -7,23 +7,24 @@ ChatGPT in your whatsapp, with your own phone number!
 </p>
 
 ## Installation
-- Clone the repo
-- Create .env file (or just remove the .env.example to .env)
-- Add the OpenAI API key there and the system message.
-- System message can be anything, it is the first prompt chatgpt will listen to, and should be stronger than a normal user prompt. You can put rules there.
+1. Clone the repo
 
 ## Getting Started
 
 ### Local
-- First, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
-- Then it will produce a QR code, connect it to your whatsapp number.
-- When it logs `Client is ready!`, close with `shift` and `C`
-- Then run `npm run start`
-- You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
+1. First, you need to setup OpenAI API and put a system message.
+        - If you don't have an OpenAI account, create it first [here](https://auth0.openai.com/u/signup), then create a key [here](https://platform.openai.com/overview).
+2. Add OpenAI API key and the system message in the .env file.
+        -  System message can be anything, it is the first prompt chatgpt will listen to, and should be stronger than a normal user prompt. You can put rules there.
+3. Then, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
+4. Wait for it to produce a QR code, connect it to your whatsapp number.
+5. When it logs `Client is ready!`, close with `shift` and `C`
+6. Then run `npm run start`
+7. You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
 
 
 ## Keeping it running
-- Since it is local, it only runs as long as your computer runs.
+- Since it is local, it only runs as long as your computer is running.
 - Personally I run `pm2` with cron job restarting it every hour because it has some problems. If you want to do the same, run `pm2 start index.js --cron-restart="0 * * * *"`
 
 ## Deploying
