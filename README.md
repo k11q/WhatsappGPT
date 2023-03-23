@@ -22,6 +22,10 @@ ChatGPT in your whatsapp, with your own phone number!
 6. Then run `npm run start`
 7. You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
 
+## Usage
+- When somebody send a message to the number you connected starting with `!chat`(or other command you configured) via whatsapp, either in groups or personal, it will reply with a response from chatGPT.
+- It remembers your 4 previous messages(only that starts with `!chat`) or 2 messages back to back and you can follow up the questions with that.
+- Sometimes it wont work, maybe because you filled the token limit, so what you can do is message it with `!chat delete history` to prevent from sending previous messages and you can run again.
 
 ## Keeping it running
 - Since it is local, it only runs as long as your computer is running.
@@ -33,14 +37,8 @@ ChatGPT in your whatsapp, with your own phone number!
 ## Security
 - OpenAI stores your message, so every message you sent with "!chat" will be remembered
 
-## Customization
+## Configuration
 - You can replace the default `!chat` command with anything with anything by changing the `trigger` value in `config.yaml`
-
-## Usage
-- Does the chat remember my previous chats? Yes, up to 4 previous messages(2 back to back messages), I am planning to allow to configure it easily, but right now this can be changed manually in `index.js`.
-
-## Advance API
-- `!chat delete history` - Sometimes you might exceed the number of tokens(because it includes history). So running this will delete all history so you can make another command
 
 > **Note**
 > Right now error handling via the API call isn't working. Don't mad at me.
