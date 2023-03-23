@@ -1,93 +1,82 @@
 import qrcode from "qrcode-terminal";
 import pkg from "whatsapp-web.js";
 const { Client, LocalAuth } = pkg;
+import { ConversationChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models";
 import {
-	HumanChatMessage,
-	SystemChatMessage,
-	AIChatMessage,
-} from "langchain/schema";
+	ChatPromptTemplate,
+	HumanMessagePromptTemplate,
+	SystemMessagePromptTemplate,
+	MessagesPlaceholder,
+} from "langchain/prompts";
+import { BufferMemory } from "langchain/memory";
 import dotenv from "dotenv";
 import yaml from "js-yaml";
-import cron from "node-cron";
 import fs from "fs";
 dotenv.config();
 
-let client = new Client({ authStrategy: new LocalAuth() });
-const chat = new ChatOpenAI({ temperature: 0 });
+const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
 
+const chat = new ChatOpenAI({ temperature: 0.2 });
+const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+	SystemMessagePromptTemplate.fromTemplate(process.env.SYSTEM_MESSAGE),
+	new MessagesPlaceholder("history"),
+	HumanMessagePromptTemplate.fromTemplate("{input}"),
+]);
+let chain = new ConversationChain({
+	memory: new BufferMemory({
+		returnMessages: true,
+		memoryKey: "history",
+	}),
+	prompt: chatPrompt,
+	llm: chat,
+});
+
+let client = new Client({ authStrategy: new LocalAuth() });
 client.on("qr", (qr) => {
 	qrcode.generate(qr, { small: true });
 });
-
 client.on("ready", () => {
 	console.log("Client is ready!");
 });
-
 client.initialize();
 
-const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
-
-let chatMessages = [];
-if (fs.existsSync("history.json")) {
-	const fileContents = fs.readFileSync("history.json", "utf-8");
-	chatMessages = JSON.parse(fileContents);
-}
-
-// Delete the history every hour at minute 59(before restarting pm2), this is to prevent overuse of api usage
-cron.schedule("59 * * * *", () => {
-	if (fs.existsSync("history.json")) {
-		fs.unlinkSync("history.json");
-		console.log("history deleted");
-	}
-});
+let lastMessageTime = 0;
+let historyEmpty = true;
 
 client.on("message", async (message) => {
-	if (message.body === `${config.trigger} delete history`) {
-		fs.unlinkSync("history.json");
-		message.reply("history deleted");
+	const currentTime = new Date().getTime();
+	const elapsedTime = (currentTime - lastMessageTime) / (1000 * 60);
+	if (message.body === "!chat delete history" || (elapsedTime >= 30 && !historyEmpty) ) {
+		chain = new ConversationChain({
+			memory: new BufferMemory({
+				returnMessages: true,
+				memoryKey: "history",
+			}),
+			prompt: chatPrompt,
+			llm: chat,
+		});
+		historyEmpty = true;
+		if (message.body === "!chat delete history") {
+			message.reply("history deleted");
+		}
 		return;
 	}
-	const firstWord = message.body.split(" ").shift();
 	const numberOfWords = message.body.split(" ").length;
-	if (firstWord === config.trigger && numberOfWords > 1) {
-		const trimmedLength = chatMessages.length - 4;
-		if (trimmedLength > 0) {
-			chatMessages.splice(0, trimmedLength);
-		}
-		chatMessages.push({
-			name: message._data.notifyName,
-			message: message.body,
-			role: "human",
-		});
+	if (
+		message.body.startsWith(`${config.trigger} `) &&
+		numberOfWords > 1
+	) {
 		const contents = message.body.split(" ").slice(1).join(" ");
-		const arr = [new SystemChatMessage(process.env.SYSTEM_MESSAGE)];
-		for (const msg of chatMessages) {
-			if (msg.role == "AI") {
-				arr.push(new AIChatMessage(msg.message));
-			} else {
-				arr.push(
-					new HumanChatMessage(
-						`${msg.name}: ${msg.message}`
-					)
-				);
-			}
-		}
-		arr.push(new HumanChatMessage(contents));
-		chat.call(arr)
-			.then((response) => {
-				chatMessages.push({
-					name: "Chat",
-					message: response.text,
-					role: "AI",
-				});
-				message.reply(response.text);
+		chain.call({ input: contents })
+			.then((res) => {
+				message.reply(res.response);
 			})
 			.catch((error) => {
 				console.log(error);
 				message.reply("error");
 			});
-		// Save chat history to file
-		fs.writeFileSync("history.json", JSON.stringify(chatMessages));
+		lastMessageTime = currentTime;
+		historyEmpty = false;
 	}
 });

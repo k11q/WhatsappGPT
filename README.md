@@ -31,15 +31,16 @@ ChatGPT in your whatsapp, with your own phone number!
 > Caution with sharing your number connected to this. Incase somebody spam your number, the number might be banned by whatsapp, or you will lose a ton of money via OpenAI.
 
 - When somebody send a message to the number you connected starting with `!chat`(or other command you configured) via whatsapp, either in groups or personal, it will reply with a response from chatGPT.
-- It remembers your 4 previous messages(only that starts with `!chat`) or 2 messages back to back and you can follow up the questions with that.
-- Sometimes it wont work, maybe because you filled the token limit, so what you can do is message it with `!chat delete history` to prevent from sending previous messages and you can run again.
+- It remembers your previous messages(only that starts with `!chat`) and you can follow up the questions with that.
+- The memory will be deleted if you havent used !chat for more than 30 minutes or you restart the server.
+- If you want to delete the memory manually, message the chat with `!chat delete history` and it will wipe the memory, this is useful if you dont want to overuse the token.
 
 ## Keeping it running
 - Since it is local, it only runs as long as your computer is running.
 - Personally I run `pm2` with cron job restarting it every hour because it has some problems. If you want to do the same, run `pm2 start index.js --cron-restart="0 * * * *"`
 
 ## Deploying
-- I have no idea how to deploy it, currently it uses persistant db so it is a problem. If any of you want to contribute and find a way to deploy it easily, feel free!
+- I have no idea how to deploy it, if any of you want to contribute and find a way to deploy it easily, feel free, submit an issue!
 
 ## Security
 - OpenAI stores your message, so every message you sent with "!chat" will be remembered
