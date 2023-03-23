@@ -37,4 +37,7 @@ ChatGPT in your whatsapp, with your own number!
 - `!chat delete history` - Sometimes you might exceed the number of tokens(because it includes history). So running this will delete all history so you can make another command
 
 ***Note***
-- Right now error handling via the API call isn't working. Don't mad at me.
+> Right now error handling via the API call isn't working. Don't mad at me.
+
+***Warning***
+> Caution with sharing your number connected to this. Incase somebody spam your number, the number might be banned by whatsapp, or you will lose a ton of money via OpenAI.
