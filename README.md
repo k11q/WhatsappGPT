@@ -16,5 +16,9 @@ ChatGPT in your whatsapp, with your own number!
 - Then run `pm2 start index.js`
 - Now any message received that starts with "!chat" would be answered with a ChatGPT response!
 
+## Keeping it running
+- Since it is local, it only runs as long as your computer runs.
+- Personally I run `pm2` with cron job restarting it every hour because it has some problems. If you want to do the same, run `pm2 start index.js --cron-restart="0 * * * *"`
+
 ## Deploying
 - I have no idea how to deploy it, currently it uses persistant db so it is a problem. If any of you want to contribute and find a way to deploy it easily, feel free!
