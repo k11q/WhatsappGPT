@@ -75,7 +75,8 @@ client.on("message", async (message) => {
 				message.reply(response.text);
 			})
 			.catch((error) => {
-				message.reply(`error: ${error.message}`);
+				console.log(error);
+				message.reply("error");
 			});
 		// Save chat history to file
 		fs.writeFileSync("history.json", JSON.stringify(chatMessages));
