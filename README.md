@@ -5,6 +5,7 @@ Installation
 - Clone the repo
 - Create .env file (or just remove the .env.example to .env)
 - Add the OpenAI API key there and the system message.
+- System message can be anything, it is the first prompt chatgpt will listen to, and should be stronger than a normal user prompt. You can put rules there.
 
 ## Getting Started
 
