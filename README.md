@@ -1,4 +1,4 @@
-# bot-gpt
+# WhatsappGPT
 ChatGPT in your whatsapp, with your own number!
 
 ## Installation
