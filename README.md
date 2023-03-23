@@ -10,11 +10,12 @@ ChatGPT in your whatsapp, with your own number!
 ## Getting Started
 
 ### Local
-- From the remote directory, run `node index.js`
+- First, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
 - Then it will produce a QR code, connect it to your whatsapp number.
-- When finished just close with `shift` and `C`
-- Then run `pm2 start index.js`
-- Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
+- When it logs `Client is ready!`, close with `shift` and `C`
+- Then run `npm run start`
+- You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
+
 
 ## Keeping it running
 - Since it is local, it only runs as long as your computer runs.
