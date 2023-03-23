@@ -9,6 +9,7 @@ import {
 } from "langchain/schema";
 import dotenv from "dotenv";
 import yaml from "js-yaml";
+import cron from "node-cron";
 import fs from "fs";
 dotenv.config();
 
@@ -32,6 +33,14 @@ if (fs.existsSync("history.json")) {
 	const fileContents = fs.readFileSync("history.json", "utf-8");
 	chatMessages = JSON.parse(fileContents);
 }
+
+// Delete the history every hour at minute 59(before restarting pm2), this is to prevent overuse of api usage
+cron.schedule("59 * * * *", () => {
+	if (fs.existsSync("history.json")) {
+		fs.unlinkSync("history.json");
+		console.log("history deleted");
+	}
+});
 
 client.on("message", async (message) => {
 	if (message.body === `${config.trigger} delete history`) {
