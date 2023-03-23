@@ -25,7 +25,7 @@ client.on("ready", () => {
 
 client.initialize();
 
-const config = yaml.safeLoad(fs.readFileSync("config.yaml", "utf-8"));
+const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
 
 let chatMessages = [];
 if (fs.existsSync("history.json")) {

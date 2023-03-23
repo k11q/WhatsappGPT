@@ -28,3 +28,12 @@ ChatGPT in your whatsapp, with your own number!
 
 ## Customization
 - You can replace the default `!chat` command with anything with anything by changing the `trigger` value in `config.yaml`
+
+## Usage
+- Does the chat remember my previous chats? Yes, up to 4 previous messages(2 back to back messages), I am planning to allow to configure it easily, but right now this can be changed manually in `index.js`.
+
+## Advance API
+- `!chat delete history` - Sometimes you might exceed the number of tokens(because it includes history). So running this will delete all history so you can make another command
+
+***Note***
+- Right now error handling via the API call isn't working. Don't mad at me.
