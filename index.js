@@ -8,18 +8,12 @@ import {
 	AIChatMessage,
 } from "langchain/schema";
 import dotenv from "dotenv";
+import yaml from "js-yaml";
 import fs from "fs";
 dotenv.config();
 
 let client = new Client({ authStrategy: new LocalAuth() });
 const chat = new ChatOpenAI({ temperature: 0 });
-let chatMessages = [];
-
-// Load chat history from file if it exists
-if (fs.existsSync("history.json")) {
-	const fileContents = fs.readFileSync("history.json", "utf-8");
-	chatMessages = JSON.parse(fileContents);
-}
 
 client.on("qr", (qr) => {
 	qrcode.generate(qr, { small: true });
@@ -31,18 +25,22 @@ client.on("ready", () => {
 
 client.initialize();
 
-client.on("message", (message) => {
-	console.log(message);
-});
+const config = yaml.safeLoad(fs.readFileSync("config.yaml", "utf-8"));
+
+let chatMessages = [];
+if (fs.existsSync("history.json")) {
+	const fileContents = fs.readFileSync("history.json", "utf-8");
+	chatMessages = JSON.parse(fileContents);
+}
 
 client.on("message", async (message) => {
 	const firstWord = message.body.split(" ").shift();
-	if (message.body === "!chat delete history") {
+	if (message.body === `${config.trigger} delete history`) {
 		fs.unlinkSync("history.json");
 		message.reply("history deleted");
 		return;
 	}
-	if (firstWord === "!chat") {
+	if (firstWord === config.trigger) {
 		if (chatMessages.length > 4) {
 			chatMessages.splice(0, 1);
 		}
