@@ -38,6 +38,9 @@ let chain = new ConversationChain({
 mongoose.connect(process.env.MONGODB_URI).then(async () => {
 	const store = new MongoStore({ mongoose: mongoose });
 	const client = new Client({
+		puppeteer: {
+			args: ["--no-sandbox", "--disable-setuid-sandbox"],
+		},
 		authStrategy: new RemoteAuth({
 			store: store,
 			backupSyncIntervalMs: 300000,
