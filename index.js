@@ -5,9 +5,10 @@ import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import yaml from "js-yaml";
 import fs from "fs";
-dotenv.config();
 import { MongoStore } from "wwebjs-mongo";
 import mongoose from "mongoose";
+
+dotenv.config();
 
 const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
 
@@ -16,7 +17,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 let systemMessage = { role: "system", content: process.env.SYSTEM_MESSAGE };
-let memory = [systemMessage];
+let memory = [];
 
 // Load the session data
 mongoose.connect(process.env.MONGODB_URI).then(async () => {
@@ -54,6 +55,7 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
 	let lastMessageTime = new Date().getTime();
 
 	client.on("message", async (message) => {
+		memory[0] = systemMessage
 		const currentTime = new Date().getTime();
 		const elapsedTime =
 			(currentTime - lastMessageTime) / (1000 * 60);
@@ -62,7 +64,7 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
 			(elapsedTime >= 30 && memory.length > 1)
 		) {
 			if (message.body === "!chat delete history") {
-				memory = [systemMessage];
+				memory = [];
 				message.reply("history deleted");
 			}
 			return;
