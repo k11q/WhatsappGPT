@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 
 const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
 
-const chat = new ChatOpenAI({ temperature: 0.2 });
+const chat = new ChatOpenAI({ temperature: 0.2 ,openAIApiKey: process.env.OPENAPI_API_KEY});
 const chatPrompt = ChatPromptTemplate.fromPromptMessages([
 	SystemMessagePromptTemplate.fromTemplate(process.env.SYSTEM_MESSAGE),
 	new MessagesPlaceholder("history"),
