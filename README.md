@@ -11,16 +11,18 @@ ChatGPT in your whatsapp, with your own phone number!
 
 ## Getting Started
 
-### Local
+### Quick Start
 1. First, you need to setup OpenAI API and put a system message.
-- If you don't have an OpenAI account, create it first [here](https://auth0.openai.com/u/signup), then create a key [here](https://platform.openai.com/overview).
-2. Add OpenAI API key and the system message in the .env file.
+- If you don't have an OpenAI account, [sign up first](https://auth0.openai.com/u/signup), then [create your secret key](https://platform.openai.com/overview).
+2. Setup your mongodb database. [register here](https://mongodb.com/)
+- Create your cluster.
+3. Add OpenAI API key, system message and mongodb URI in the .env file.
 -  System message can be anything, it is the first prompt chatgpt will listen to, we use it to setup how the AI chat should behave. You can put rules there.
-3. Then, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
-4. Wait for it to produce a QR code, connect it to your whatsapp number.
-5. When it logs `Client is ready!`, close with `shift` and `C`
-6. Then run `npm run start`
-7. You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
+4. Then, you need to setup your whatsapp client. From the remote directory, run `npm run setup`
+5. Wait for it to produce a QR code, scan it with your phone to connect to your number.
+6. When it logs `Client is ready!`, close with `shift` and `C`.
+7. Then run `npm run start`
+8. You are done with the setup! Now any message received that starts with `!chat`(and space after) would be answered with a ChatGPT response!
 
 ## Usage
 
@@ -35,15 +37,19 @@ ChatGPT in your whatsapp, with your own phone number!
 - The memory will be deleted if you havent used !chat for more than 30 minutes or you restart the server.
 - If you want to delete the memory manually, message the chat with `!chat delete history` and it will wipe the memory, this is useful if you dont want to overuse the token.
 
-## Keeping it running
-- Since it is local, it only runs as long as your computer is running.
-- Personally I run `pm2` with cron job restarting it every hour because it has some problems. If you want to do the same, run `pm2 start index.js --cron-restart="0 * * * *"`
-
 ## Deploying
-- I have no idea how to deploy it, if any of you want to contribute and find a way to deploy it easily, feel free, submit an issue!
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/HMHiAG?referralCode=E44ptv)
+
+Deploy on railway is the easiest method. Once you've set up your number and store it with mongo, just deploy and your whatsapp will forever be connected! Add your environment variables in railway.
 
 ## Security
 - OpenAI stores your message, so every message you sent with "!chat" will be remembered
 
 ## Configuration
 - You can replace the default `!chat` command with anything with anything by changing the `trigger` value in `config.yaml`
+
+## Legal
+- This isn't affiliated in any way with OpenAI or Whatsapp.
+
+> **Warning**
+> Whatsapp prohibits the use of unauthirized bots on their platform. Use this at your own risk.
