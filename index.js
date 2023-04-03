@@ -1,15 +1,7 @@
 import qrcode from "qrcode-terminal";
 import pkg from "whatsapp-web.js";
 const { Client, RemoteAuth } = pkg;
-import { ConversationChain } from "langchain/chains";
-import { ChatOpenAI } from "langchain/chat_models";
-import {
-	ChatPromptTemplate,
-	HumanMessagePromptTemplate,
-	SystemMessagePromptTemplate,
-	MessagesPlaceholder,
-} from "langchain/prompts";
-import { BufferMemory } from "langchain/memory";
+import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import yaml from "js-yaml";
 import fs from "fs";
@@ -19,20 +11,12 @@ import mongoose from "mongoose";
 
 const config = yaml.load(fs.readFileSync("config.yaml", "utf-8"));
 
-const chat = new ChatOpenAI({ temperature: 0.2 ,openAIApiKey: process.env.OPENAI_API_KEY});
-const chatPrompt = ChatPromptTemplate.fromPromptMessages([
-	SystemMessagePromptTemplate.fromTemplate(process.env.SYSTEM_MESSAGE),
-	new MessagesPlaceholder("history"),
-	HumanMessagePromptTemplate.fromTemplate("{input}"),
-]);
-let chain = new ConversationChain({
-	memory: new BufferMemory({
-		returnMessages: true,
-		memoryKey: "history",
-	}),
-	prompt: chatPrompt,
-	llm: chat,
+const configuration = new Configuration({
+	apiKey: process.env.OPENAI_API_KEY,
 });
+const openai = new OpenAIApi(configuration);
+let systemMessage = { role: "system", content: process.env.SYSTEM_MESSAGE };
+let memory = [systemMessage];
 
 // Load the session data
 mongoose.connect(process.env.MONGODB_URI).then(async () => {
@@ -67,8 +51,7 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
 
 	client.initialize();
 
-	let lastMessageTime = 0;
-	let historyEmpty = true;
+	let lastMessageTime = new Date().getTime();
 
 	client.on("message", async (message) => {
 		const currentTime = new Date().getTime();
@@ -76,18 +59,10 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
 			(currentTime - lastMessageTime) / (1000 * 60);
 		if (
 			message.body === "!chat delete history" ||
-			(elapsedTime >= 30 && !historyEmpty)
+			(elapsedTime >= 30 && memory.length > 1)
 		) {
-			chain = new ConversationChain({
-				memory: new BufferMemory({
-					returnMessages: true,
-					memoryKey: "history",
-				}),
-				prompt: chatPrompt,
-				llm: chat,
-			});
-			historyEmpty = true;
 			if (message.body === "!chat delete history") {
+				memory = [systemMessage];
 				message.reply("history deleted");
 			}
 			return;
@@ -101,16 +76,27 @@ mongoose.connect(process.env.MONGODB_URI).then(async () => {
 				.split(" ")
 				.slice(1)
 				.join(" ");
-			chain.call({ input: contents })
-				.then((res) => {
-					message.reply(res.response);
-				})
-				.catch((error) => {
-					console.log(error);
-					message.reply("error");
+			memory.push({ role: "user", content: contents });
+			try {
+				const completion =
+					await openai.createChatCompletion({
+						model: "gpt-3.5-turbo",
+						messages: memory,
+					});
+				message.reply(
+					completion.data.choices[0].message
+						.content
+				);
+				memory.push({
+					role: "assistant",
+					content: completion.data.choices[0]
+						.message.content,
 				});
+			} catch (error) {
+				message.reply("error");
+				console.log(error);
+			}
 			lastMessageTime = currentTime;
-			historyEmpty = false;
 		}
 	});
 });
